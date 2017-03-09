@@ -1,7 +1,6 @@
 #include <chrono>
-#include <iostream> //FIXME
 
-#include "timer.h"
+#include "hoytech/timer.h"
 
 
 namespace hoytech {
