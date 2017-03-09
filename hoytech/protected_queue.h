@@ -1,15 +1,5 @@
 #pragma once
 
-/*
-
-Simple thread-safe queue for C++11
-
-(C) 2016 Doug Hoyte
-2-clause BSD license
-
-*/
-
-
 #include <deque>
 #include <condition_variable>
 #include <thread>

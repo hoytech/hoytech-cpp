@@ -1,15 +1,5 @@
 #pragma once
 
-/*
-
-Timer thread implementation for C++11
-
-(C) 2016 Doug Hoyte
-2-clause BSD license
-
-*/
-
-
 #include <queue>
 #include <condition_variable>
 #include <thread>
