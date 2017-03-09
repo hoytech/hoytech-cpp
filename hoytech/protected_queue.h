@@ -3,6 +3,7 @@
 #include <deque>
 #include <condition_variable>
 #include <thread>
+#include <vector>
 
 
 namespace hoytech {
@@ -91,6 +92,17 @@ class protected_queue {
             std::unique_lock<decltype(mutex_)> lock(mutex_);
             cv_.wait(lock, [this](){ return q_.size() != 0; });
 
+            temp_queue.swap(q_);
+        }
+
+        return std::move(temp_queue);
+    }
+
+    std::deque<T> pop_all_no_wait() {
+        decltype(q_) temp_queue;
+
+        {
+            std::unique_lock<decltype(mutex_)> lock(mutex_);
             temp_queue.swap(q_);
         }
 
