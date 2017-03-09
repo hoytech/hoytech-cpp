@@ -5,7 +5,7 @@
 
 namespace hoytech {
 
-timer::timer() {
+void timer::run() {
     t = std::thread([this]() {
         std::unique_lock<std::mutex> lock(m);
 
@@ -50,6 +50,8 @@ timer::timer() {
 }
 
 timer::~timer() {
+    if (!t.joinable()) return;
+
     std::unique_lock<std::mutex> lock(m);
     shutdown = true;
 

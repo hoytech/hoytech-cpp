@@ -13,7 +13,7 @@ using timer_cancel_token = uint64_t;
 
 class timer {
   public:
-    timer();
+    void run();
     ~timer();
     timer_cancel_token once(uint64_t interval_microseconds, std::function<void()> cb);
     timer_cancel_token repeat(uint64_t interval_microseconds, std::function<void()> cb);
