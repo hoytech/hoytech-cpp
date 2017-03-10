@@ -28,7 +28,7 @@ void timer::run() {
                 auto &it = queue.top();
                 if (it.trigger > now) break;
 
-                if (live_timers.erase(it.cancel_token)) {
+                if (live_timers.count(it.tok)) {
                     bool again;
 
                     {
@@ -39,7 +39,9 @@ void timer::run() {
 
                     if (again) {
                         auto trigger = now + std::chrono::microseconds(it.interval);
-                        add_item(it.interval, it.cancel_token, it.cb, trigger);
+                        queue.emplace(it.interval, it.tok, it.cb, trigger);
+                    } else {
+                        live_timers.erase(it.tok);
                     }
                 }
 
@@ -61,28 +63,15 @@ timer::~timer() {
     t.join();
 }
 
-timer_cancel_token timer::once(uint64_t interval_microseconds, std::function<void()> cb) {
-    return repeat_maybe(interval_microseconds, [&, cb]{
-        cb();
-        return false;
-    });
-}
-
-timer_cancel_token timer::repeat(uint64_t interval_microseconds, std::function<void()> cb) {
-    return repeat_maybe(interval_microseconds, [&, cb]{
-        cb();
-        return true;
-    });
-}
-
-timer_cancel_token timer::repeat_maybe(uint64_t interval_microseconds, std::function<bool()> cb) {
+hoytech::timer::cancel_token timer::repeat_maybe(uint64_t interval_microseconds, std::function<bool()> cb) {
     std::unique_lock<std::mutex> lock(m);
 
-    timer_cancel_token tok = next_cancel_token++;
+    auto tok = next_cancel_token++;
 
     auto trigger = std::chrono::steady_clock::now() + std::chrono::microseconds(interval_microseconds);
 
-    add_item(interval_microseconds, tok, cb, trigger);
+    queue.emplace(interval_microseconds, tok, cb, trigger);
+    live_timers.insert(tok);
 
     lock.unlock();
     cv.notify_all();
@@ -90,7 +79,7 @@ timer_cancel_token timer::repeat_maybe(uint64_t interval_microseconds, std::func
     return tok;
 }
 
-bool timer::cancel(timer_cancel_token tok) {
+bool timer::cancel(hoytech::timer::cancel_token tok) {
     std::unique_lock<std::mutex> lock(m);
     return live_timers.erase(tok);
 }
