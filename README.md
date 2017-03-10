@@ -10,4 +10,4 @@ Thread-safe queue implementation. Header-only library.
 
 ## timer
 
-Spawns a thread which will run timers. Timers are cancellable.
+Spawns a thread which will run timers. Timers are cancellable. See the file `ex/timer_test.cpp` for a usage example.
