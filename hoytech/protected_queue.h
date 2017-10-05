@@ -32,6 +32,18 @@ class protected_queue {
         cv_.notify_one();
     }
 
+    void push_all(std::vector<T> &vec) {
+        {
+            std::unique_lock<std::mutex> lock(mutex_);
+
+            for (auto &e : vec) {
+                q_.push_back(e);
+            }
+        }
+
+        cv_.notify_one();
+    }
+
     void push_move_all(std::vector<T> &vec) {
         {
             std::unique_lock<std::mutex> lock(mutex_);
