@@ -11,3 +11,15 @@ Thread-safe queue implementation. Header-only library.
 ## timer
 
 Spawns a thread which will run timers. Timers are cancellable. See the file `ex/timer_test.cpp` for a usage example.
+
+## assert_zerocopy
+
+Assertions to test whether memory is shared (or not).
+
+## error
+
+Simple base class for run-time exceptions, and a way to construct them.
+
+## hex
+
+Convert strings to/from hexadecimal encoding.
