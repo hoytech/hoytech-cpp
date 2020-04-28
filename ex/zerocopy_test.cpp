@@ -12,22 +12,30 @@ int main() {
         std::string base2 = "hello world!";
         assert_copied(base, base2);
         assert_copied(base2, base);
+        assert(hoytech::is_zerocopy(base, base2) == false);
 
         std::string other = "llo w";
         assert_copied(base, other);
         assert_copied(other, base);
+        assert(hoytech::is_zerocopy(base, other) == false);
     }
 
     {
         std::string_view a(base);
         assert_zerocopy(base, a);
         assert_zerocopy(a, base);
+        assert_zerocopy_substr(base, a);
+        assert_zerocopy_substr(a, base);
+        assert(hoytech::is_zerocopy(base, a) == true);
+        assert(hoytech::is_zerocopy(a, base) == true);
 
         std::string_view b(base);
         assert_zerocopy(base, b);
         assert_zerocopy(b, base);
         assert_zerocopy(a, b);
         assert_zerocopy(b, a);
+        assert_zerocopy_substr(a, b);
+        assert_zerocopy_substr(b, a);
     }
 
     {
@@ -35,6 +43,8 @@ int main() {
         assert(a == "llo");
         assert_zerocopy(a, base);
         assert_zerocopy(base, a);
+        assert_zerocopy_substr(base, a);
+        //assert_zerocopy_substr(a, base); // <-- this fails
 
         assert_copied(a, "llo");
         assert_copied("llo", a);
@@ -81,6 +91,9 @@ int main() {
         // empty string edge cases
         assert_zerocopy(base, "");
         assert_zerocopy("", base);
+        assert_zerocopy_substr(base, "");
+        assert_zerocopy_substr("", "");
+        //assert_zerocopy_substr("", base); <-- this fails
         assert_copied(base, "");
         assert_copied("", base);
 
@@ -90,8 +103,7 @@ int main() {
         assert_copied(std::string_view("blah", 0), base);
     }
 
-    if (0) {
-        // These rely on compiler de-duplicating string literals
+    if (0) { // These rely on compiler de-duplicating string literals (fails if compiled at -O0)
         assert_zerocopy("test", "test");
         assert_zerocopy("this is a test", "is a test");
     }
