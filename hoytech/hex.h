@@ -30,7 +30,7 @@ static inline std::string to_hex(std::string_view input, bool prefixed = false) 
 static inline std::string from_hex(std::string_view input) {
     if (input.length() >= 2 && input.substr(0,2) == "0x") input = input.substr(2);
 
-    std::string padded;
+    std::string padded; // does a copy if given non-even number of hex digits
     if ((input.length() % 2) != 0) {
         padded += '0';
         padded += input;
