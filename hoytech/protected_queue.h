@@ -84,7 +84,7 @@ class protected_queue {
         T data = std::move(q_.back());
         q_.pop_back();
 
-        return std::move(data);
+        return data;
     }
 
     T shift() {
@@ -94,7 +94,7 @@ class protected_queue {
         T data = std::move(q_.front());
         q_.pop_front();
 
-        return std::move(data);
+        return data;
     }
 
     std::deque<T> pop_all() {
@@ -107,7 +107,7 @@ class protected_queue {
             temp_queue.swap(q_);
         }
 
-        return std::move(temp_queue);
+        return temp_queue;
     }
 
     std::deque<T> pop_all_no_wait() {
@@ -118,7 +118,7 @@ class protected_queue {
             temp_queue.swap(q_);
         }
 
-        return std::move(temp_queue);
+        return temp_queue;
     }
 
     std::deque<T> pop_all_nonblocking() {
@@ -132,7 +132,7 @@ class protected_queue {
             }
         }
 
-        return std::move(temp_queue);
+        return temp_queue;
     }
 
   private:
