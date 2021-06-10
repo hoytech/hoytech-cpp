@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string_view>
 
-#include "assert_zerocopy.h"
+#include "hoytech/assert_zerocopy.h"
 
 int main() {
     std::string base = "hello world!";

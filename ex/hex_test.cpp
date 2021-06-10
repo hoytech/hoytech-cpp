@@ -1,8 +1,8 @@
 #include <iostream>
 #include <string_view>
 
-#include "hex.h"
-#include "error.h"
+#include "hoytech/hex.h"
+#include "hoytech/error.h"
 
 int main() {
     if (hoytech::to_hex("\x01\x02\x03\x04") != "01020304") throw hoytech::error("fail");

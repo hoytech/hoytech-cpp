@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-#include "timer.h"
+#include "hoytech/timer.h"
 
 int main() {
     hoytech::timer t;
