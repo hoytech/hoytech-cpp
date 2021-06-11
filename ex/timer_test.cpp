@@ -12,6 +12,10 @@ int main() {
         std::cout << "Every .5 seconds" << std::endl;
     });
 
+    t.repeat(0, [&]{
+        std::cout << "0 INTERVAL = NEVER HAPPENS" << std::endl;
+    });
+
     t.run();
 
     // Can also install after run()
@@ -28,7 +32,13 @@ int main() {
         });
     });
 
-    sleep(10);
+    t.repeat_adjustable(1*1'000'000, [&t, curr(1)]() mutable {
+        curr *= 2;
+        std::cout << "CURR SLEEP: " << curr << std::endl;
+        return curr * 1'000'000;
+    });
+
+    sleep(16);
 
     std::cout << "All done, let's destroy the timer" << std::endl;
 

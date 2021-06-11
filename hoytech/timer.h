@@ -36,17 +36,17 @@ class timer {
                     if (it.trigger > now) break;
 
                     if (live_timers.count(it.tok)) {
-                        bool again;
+                        uint64_t new_interval;
 
                         {
                             lock.unlock(); // in case the callback wants to add/cancel other timers
-                            again = it.cb();
+                            new_interval = it.cb();
                             lock.lock();
                         }
 
-                        if (again) {
-                            auto trigger = now + std::chrono::microseconds(it.interval);
-                            queue.emplace(it.interval, it.tok, it.cb, trigger);
+                        if (new_interval) {
+                            auto trigger = now + std::chrono::microseconds(new_interval);
+                            queue.emplace(it.tok, it.cb, trigger);
                         } else {
                             live_timers.erase(it.tok);
                         }
@@ -72,14 +72,16 @@ class timer {
 
     using cancel_token = uint64_t;
 
-    cancel_token repeat_maybe(uint64_t interval_microseconds, std::function<bool()> cb) {
+    cancel_token repeat_adjustable(uint64_t interval_microseconds, std::function<uint64_t()> cb) {
+        if (interval_microseconds == 0) return 0;
+
         std::unique_lock<std::mutex> lock(m);
 
         auto tok = next_cancel_token++;
 
         auto trigger = std::chrono::steady_clock::now() + std::chrono::microseconds(interval_microseconds);
 
-        queue.emplace(interval_microseconds, tok, cb, trigger);
+        queue.emplace(tok, cb, trigger);
         live_timers.insert(tok);
 
         lock.unlock();
@@ -94,31 +96,36 @@ class timer {
     }
 
     cancel_token once(uint64_t interval_microseconds, const std::function<void()> &cb) {
-        return repeat_maybe(interval_microseconds, [&, cb]{
+        return repeat_adjustable(interval_microseconds, [cb]{
             cb();
-            return false;
+            return 0;
+        });
+    }
+
+    cancel_token repeat_maybe(uint64_t interval_microseconds, const std::function<bool()> &cb) {
+        return repeat_adjustable(interval_microseconds, [cb, interval_microseconds]{
+            return cb() ? interval_microseconds : 0;
         });
     }
 
     cancel_token repeat(uint64_t interval_microseconds, const std::function<void()> &cb) {
-        return repeat_maybe(interval_microseconds, [&, cb]{
+        return repeat_adjustable(interval_microseconds, [cb, interval_microseconds]{
             cb();
-            return true;
+            return interval_microseconds;
         });
     }
 
   private:
     struct item {
-        item(uint64_t interval_, cancel_token tok_, std::function<bool()> cb_, std::chrono::steady_clock::time_point trigger_)
-            : interval(interval_), tok(tok_), cb(cb_), trigger(trigger_) {}
+        item(cancel_token tok_, std::function<uint64_t()> cb_, std::chrono::steady_clock::time_point trigger_)
+            : tok(tok_), cb(cb_), trigger(trigger_) {}
 
         bool operator<(const item& rhs) const {
             return trigger > rhs.trigger;
         }
 
-        uint64_t interval;
         cancel_token tok;
-        std::function<bool()> cb;
+        std::function<uint64_t()> cb;
         std::chrono::steady_clock::time_point trigger;
     };
 
