@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stdio.h>
+
 #include <string>
 #include <string_view>
 
@@ -25,6 +27,14 @@ static inline std::string to_hex(std::string_view input, bool prefixed = false) 
     }
 
     return output;
+}
+
+static inline std::string to_hex(uint64_t input, bool prefixed = false) {
+    char buf[32];
+
+    snprintf(buf, sizeof(buf), "%s%lx", prefixed ? "0x" : "", input);
+
+    return std::string(buf);
 }
 
 static inline std::string from_hex(std::string_view input) {
