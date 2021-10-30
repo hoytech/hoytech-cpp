@@ -29,11 +29,9 @@ class timer {
 
                 if (shutdown) return;
 
-                auto now = std::chrono::steady_clock::now();
-
                 while (!queue.empty()) {
                     auto &it = queue.top();
-                    if (it.trigger > now) break;
+                    if (it.trigger > std::chrono::steady_clock::now()) break;
 
                     if (live_timers.count(it.tok)) {
                         uint64_t new_interval;
@@ -45,7 +43,7 @@ class timer {
                         }
 
                         if (new_interval) {
-                            auto trigger = now + std::chrono::microseconds(new_interval);
+                            auto trigger = std::chrono::steady_clock::now() + std::chrono::microseconds(new_interval);
                             queue.emplace(it.tok, it.cb, trigger);
                         } else {
                             live_timers.erase(it.tok);
