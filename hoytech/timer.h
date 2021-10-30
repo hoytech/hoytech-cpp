@@ -88,6 +88,10 @@ class timer {
         return tok;
     }
 
+    cancel_token repeat_adjustable(std::function<uint64_t()> cb) {
+        return repeat_adjustable(1, cb);
+    }
+
     bool cancel(cancel_token tok) {
         std::unique_lock<std::mutex> lock(m);
         return live_timers.erase(tok); // returns true if timer was cancelled
