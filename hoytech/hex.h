@@ -9,7 +9,7 @@
 
 namespace hoytech {
 
-static inline std::string to_hex(std::string_view input, bool prefixed = false) {
+inline std::string to_hex(std::string_view input, bool prefixed = false) {
     size_t prefix_offset = (prefixed ? 2 : 0);
 
     std::string output(2*input.length() + prefix_offset, '\0');
@@ -29,7 +29,7 @@ static inline std::string to_hex(std::string_view input, bool prefixed = false) 
     return output;
 }
 
-static inline std::string to_hex(uint64_t input, bool prefixed = false) {
+inline std::string to_hex(uint64_t input, bool prefixed = false) {
     char buf[32];
 
     snprintf(buf, sizeof(buf), "%s%lx", prefixed ? "0x" : "", input);
@@ -37,7 +37,7 @@ static inline std::string to_hex(uint64_t input, bool prefixed = false) {
     return std::string(buf);
 }
 
-static inline std::string from_hex(std::string_view input) {
+inline std::string from_hex(std::string_view input) {
     if (input.length() >= 2 && input.substr(0,2) == "0x") input = input.substr(2);
 
     std::string padded; // does a copy if given non-even number of hex digits

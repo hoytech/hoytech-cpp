@@ -7,7 +7,7 @@
 
 namespace hoytech {
 
-static inline bool assert_zerocopy_impl(std::string_view a, std::string_view b, bool want_zerocopy) {
+inline bool assert_zerocopy_impl(std::string_view a, std::string_view b, bool want_zerocopy) {
     if (a.size() == 0 || b.size() == 0) return true;
 
     if (a.data() >= b.data() && a.data() < (b.data() + b.size())) return want_zerocopy;
@@ -15,11 +15,11 @@ static inline bool assert_zerocopy_impl(std::string_view a, std::string_view b, 
     return !want_zerocopy;
 }
 
-static inline bool is_zerocopy(std::string_view a, std::string_view b) {
+inline bool is_zerocopy(std::string_view a, std::string_view b) {
     return assert_zerocopy_impl(a, b, true);
 }
 
-static inline bool is_zerocopy_substr(std::string_view container, std::string_view substr) {
+inline bool is_zerocopy_substr(std::string_view container, std::string_view substr) {
     if (substr.size() == 0) return true;
     return substr.data() >= container.data() && substr.data() + substr.size() <= container.data() + container.size();
 }
