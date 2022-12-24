@@ -37,11 +37,12 @@ inline std::string to_hex(uint64_t input, bool prefixed = false) {
     return std::string(buf);
 }
 
-inline std::string from_hex(std::string_view input) {
+inline std::string from_hex(std::string_view input, bool allowUnevenSize = true) {
     if (input.length() >= 2 && input.substr(0,2) == "0x") input = input.substr(2);
 
-    std::string padded; // does a copy if given non-even number of hex digits
     if ((input.length() % 2) != 0) {
+        if (!allowUnevenSize) throw hoytech::error("uneven size input to from_hex");
+        std::string padded; // does a copy if given non-even number of hex digits
         padded += '0';
         padded += input;
         input = padded;
