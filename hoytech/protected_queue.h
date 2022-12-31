@@ -23,7 +23,7 @@ class protected_queue {
         cv_.notify_one();
     }
 
-    void push_move(const T& data) {
+    void push_move(T&& data) {
         {
             std::unique_lock<std::mutex> lock(mutex_);
             q_.emplace_back(std::move(data));
@@ -65,7 +65,7 @@ class protected_queue {
         cv_.notify_one();
     }
 
-    void unshift_move(const T& data) {
+    void unshift_move(T&& data) {
         {
             std::unique_lock<std::mutex> lock(mutex_);
             q_.emplace_front(std::move(data));
