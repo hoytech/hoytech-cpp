@@ -12,8 +12,12 @@ namespace hoytech {
 
 class timer {
   public:
+    std::function<void()> setupCb; // Run in timer thread context
+
     void run() {
         t = std::thread([this]() {
+            if (setupCb) setupCb();
+
             std::unique_lock<std::mutex> lock(m);
 
             while (1) {
