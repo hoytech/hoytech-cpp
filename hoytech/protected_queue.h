@@ -74,6 +74,18 @@ class protected_queue {
         cv_.notify_one();
     }
 
+    void unshift_move_all(std::deque<T> &vec) {
+        {
+            std::unique_lock<std::mutex> lock(mutex_);
+
+            for (auto it = vec.rbegin(); it != vec.rend(); ++it) {
+                q_.emplace_front(std::move(*it));
+            }
+        }
+
+        cv_.notify_one();
+    }
+
 
     // Waiting on items
 
