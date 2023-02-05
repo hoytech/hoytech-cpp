@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string.h>
 #include <errno.h>
 #include <unistd.h>
 #include <sys/inotify.h>
@@ -47,13 +48,13 @@ class file_change_monitor {
   public:
     file_change_monitor(std::string path) {
        inotify_fd = ::inotify_init1(IN_NONBLOCK);
-        if (inotify_fd < 0) throw hoytech::error("unable to create inotify descriptor");
+        if (inotify_fd < 0) throw hoytech::error("unable to create inotify descriptor: ", ::strerror(errno));
 
         inotify_wd = ::inotify_add_watch(inotify_fd, path.c_str(), IN_MODIFY);
-        if (inotify_fd < 0) throw hoytech::error("unable to add watch to inotify descriptor");
+        if (inotify_fd < 0) throw hoytech::error("unable to add watch to inotify descriptor: ", ::strerror(errno));
 
         eventfd_fd = ::eventfd(0, 0);
-        if (eventfd_fd < 0) throw hoytech::error("unable to create eventfd descriptor");
+        if (eventfd_fd < 0) throw hoytech::error("unable to create eventfd descriptor: ", ::strerror(errno));
     }
 
     void setDebounce(uint64_t ms) {
