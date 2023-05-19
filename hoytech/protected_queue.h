@@ -89,9 +89,10 @@ class protected_queue {
 
     // Waiting on items
 
-    void wait() {
+    size_t wait() {
         std::unique_lock<std::mutex> lock(mutex_);
         cv_.wait(lock, [this](){ return q_.size() != 0; });
+        return q_.size();
     }
 
 
