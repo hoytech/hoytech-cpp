@@ -78,8 +78,12 @@ class protected_queue {
         {
             std::unique_lock<std::mutex> lock(mutex_);
 
-            for (auto it = vec.rbegin(); it != vec.rend(); ++it) {
-                q_.emplace_front(std::move(*it));
+            if (q_.empty()) {
+                vec.swap(q_);
+            } else {
+                for (auto it = vec.rbegin(); it != vec.rend(); ++it) {
+                    q_.emplace_front(std::move(*it));
+                }
             }
         }
 
