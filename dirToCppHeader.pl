@@ -1,6 +1,7 @@
 #!/usr/bin/env perl
 
 use strict;
+use Digest::SHA;
 
 my $dir = shift || die "need directory";
 my $accessor = shift || die "need accessor";
@@ -20,12 +21,10 @@ foreach my $path (glob "$dir/*") {
     $filename =~ s/\W/_/g;
 
     my $file = slurp_file($path);
+    my $hash = unpack("H*", Digest::SHA::sha256($file));
 
     my $len = length($file);
 
-    #$file =~ s/\\/\\x5C/g;
-    #$file =~ s/([^\x20-\x7E])/sprintf "\\x%02x", ord($1)/eg;
-    #$file =~ s/"/\\"/g;
     $file =~ s/(.)/sprintf "\\x%02x", ord($1)/seg;
 
 print <<END;
@@ -35,6 +34,10 @@ static const size_t ${accessor}__${filename}__size = $len;
 
 [[maybe_unused]] static std::string_view ${accessor}__${filename}() {
     return std::string_view(${accessor}__${filename}__data, ${accessor}__${filename}__size);
+}
+
+[[maybe_unused]] static std::string_view ${accessor}__${filename}__hash() {
+    return std::string_view("$hash", 64);
 }
 
 END
