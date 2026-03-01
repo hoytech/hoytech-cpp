@@ -11,9 +11,7 @@ my $file = slurp_file($filename);
 
 my $len = length($file);
 
-$file =~ s/\\/\\x5C/g;
-$file =~ s/([^\x20-\x7F])/sprintf "\\x%02x", ord($1)/eg;
-$file =~ s/"/\\"/g;
+$file =~ s/(.)/sprintf "\\x%02x", ord($1)/seg;
 
 
 print <<END;
