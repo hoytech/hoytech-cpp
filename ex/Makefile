@@ -18,3 +18,6 @@ hex_test: hex_test.cpp ../hoytech/hex.h
 
 file_change_monitor_test: file_change_monitor_test.cpp ../hoytech/file_change_monitor.h
 	$(CXX) $(CXXFLAGS) file_change_monitor_test.cpp $(LDFLAGS) -o $@
+
+stream_test: stream_test.cpp ../hoytech/stream.h
+	$(CXX) $(CXXFLAGS) stream_test.cpp $(LDFLAGS) -o $@
