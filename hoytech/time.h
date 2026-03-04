@@ -15,5 +15,9 @@ inline uint64_t curr_time_us() {
     return (uint64_t)tv.tv_sec * 1000000 + tv.tv_usec;
 }
 
+inline uint64_t curr_time_ms() {
+    return curr_time_us() / 1000;
+}
+
 
 }
